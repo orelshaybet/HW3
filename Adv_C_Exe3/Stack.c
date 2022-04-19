@@ -19,7 +19,6 @@ charNode* add_to_head(charNode* head, charNode* newnode);
 void remove_item(charNode** head);
 void printStack(charNode* head);
 int size_of_stack(charNode* head);
-charNode* the_lust_one(Stack* s);
 
 /***************** Stack ADT Implementation *****************/
 
@@ -63,6 +62,7 @@ char pop(Stack* s)
 	}
 	res = s->head->data;
 	remove_item(&(s->head));
+	return res;
 }
 
 void remove_item(charNode **head)
@@ -87,7 +87,6 @@ int isEmptyStack(const Stack* s)
 
 void flipBetweenHashes(const char* sentence)
 {
-	int size;
 	Stack s;
 	initStack(&s);
 	while (&sentence != NULL)
@@ -130,25 +129,29 @@ void printStack(Stack* s)
 
 int isPalindrome(Stack* s)
 {
-	int size = size_of_stack(s->head);
-	if (size == 0) // if the stack is empty
+	int size = size_of_stack(s);
+	if (size = 0) 
+	{
 		return 1;
-
-	char* str = (char*)malloc(size * sizeof(char));// make array of char
-	if (str == NULL)
-	{
-		printf("memory allocation problem \n");
-		exit(0);
 	}
-	charNode* ptr = s->head;
-	for (int i = 0; i < size; i++) // copy the stack to array
+	Stack tmp;
+	initStack(&tmp);
+	char* arr = (char*)malloc(size * sizeof(char));
+	char val;
+	for (int i = 0; i < size; i++)
 	{
-		str[i] = ptr->data;
-		ptr = ptr->next;
-	}	
-	for (int i = 0; i < size / 2; i++)
+		val = pop(s);
+		arr[i] = val;
+		push(&tmp, val);
+	}
+	while (!isEmptyStack(&tmp))
 	{
-		if (str[i] != str[size - i - 1])
+		push(s, pop(&tmp));
+	}
+	destroyStack(&tmp);
+	for (int i = 0; i < (size / 2); i++)
+	{
+		if (arr[i] != arr[size - i - 1])
 		{
 			return 0;
 		}
@@ -157,41 +160,59 @@ int isPalindrome(Stack* s)
 }
 	
 
-int size_of_stack(charNode* head)
+int size_of_stack(Stack* s)
 {
-	int size = 0;
-	charNode* tmp;
-	tmp = head;
-	while (tmp != NULL)
+	Stack tmp;
+	initStack(&tmp);
+	int counter = 0;
+	while ( !isEmptyStack(s))
 	{
-		size++;
-		tmp = tmp->next;
+		char val = pop(s);
+		push(&tmp, val);
+		counter++;
 	}
-	free(tmp);
-	return size;
+	while (!isEmptyStack(&tmp))
+	{
+		push(s, pop(&tmp));
+	}
+	return counter;
 }
+
 
 void rotateStack(Stack* s, int n)
 {
-	for (int i = 0; i < n; i++)
+	int size = size_of_stack(s);
+	if (size <= 1) // if stack is empty or one object
 	{
-		charNode* new_head = the_last_one(s);
-		new_head->next = s->head;  // move the older head to be secound
-		s->head = new_head;		// move the new_head to be the first
-		while (s->head->next != NULL)// free the last of the stack
-		{
-
-		}
+		return;
 	}
-}
-
-charNode* the_last_one(Stack* s)
-{
-	charNode* tmp;
-	tmp = s->head;
-	while (tmp != NULL)
+	Stack help_stack_1;
+	Stack help_stack_2;
+	initStack(&help_stack_1);
+	initStack(&help_stack_2);
+	char val;
+	for (int i = 0; i < size - n; i++) // Insert into help stack 1
 	{
-		tmp = tmp->next;
+		val = pop(s);
+		push(&help_stack_1, val);
+		
 	}
-	return tmp;
+	for (int i = 0; i < n; i++)   // Insert into help stack 2
+	{
+		val = pop(s);
+		push(&help_stack_2, val);
+
+	}
+	for (int i = 0; i < size - n; i++) // Insert from help stack 1 into original stack 
+	{
+		val = pop(&help_stack_1);
+		push(s, val);
+	}
+	for (int i = 0; i < n; i++) // Insert from help stack 2 into original stack
+	{
+		val = pop(&help_stack_2);
+		push(s, val);
+	}
+	destroyStack(&help_stack_1);
+	destroyStack(&help_stack_2);
 }
