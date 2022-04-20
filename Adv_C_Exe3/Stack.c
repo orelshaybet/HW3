@@ -4,15 +4,6 @@
 
 
 
-// צומת ברשימה המקושר ת
-typedef struct charNode {
-	char data;
-	struct charNode* next;
-} charNode;
-// מבנה מנהל של מחסני ת
-typedef struct Stack {
-	charNode* head;
-} Stack;
 
 /***************** My Functions *****************/
 charNode* add_to_head(charNode* head, charNode* newnode);
@@ -60,7 +51,7 @@ char pop(Stack* s)
 		printf("\nSTACK IS EMPTY");
 		return "0";
 	}
-	res = s->head->data;
+	res = s->head->data;				
 	remove_item(&(s->head));
 	return res;
 }
@@ -89,21 +80,24 @@ void flipBetweenHashes(const char* sentence)
 {
 	Stack s;
 	initStack(&s);
-	while (&sentence != NULL)
+	while (*sentence != NULL)       
 	{
-		if (&sentence != "#")
+		if (*sentence != '#')
 		{
-			printf("%c", sentence);
+			printf("%c", *sentence);
 		}
-		if (&sentence == "#")
-		{
+		if (*sentence == '#')
+		{													
 			sentence++;
-			while (&(sentence) != "#")		
+			while ((*sentence) != '#')		
 			{
-				push(&s, sentence);
+				push(&s, *sentence);
 				sentence++;
 			}
-			printStack(&s);
+			while (!isEmptyStack(&s))
+			{
+				printf("%c", pop(&s));
+			}
 			destroyStack(&s);
 
 		}
@@ -111,26 +105,10 @@ void flipBetweenHashes(const char* sentence)
 	}
 }
 
-void printStack(Stack* s)
-{
-	Stack tmp;
-	initStack(&tmp);
-	while ( !isEmptyStack(s))
-	{
-		char val = pop(s);
-		printf("%c", val);
-		push(&tmp, val);
-	}
-	while (!isEmptyStack(&tmp))
-	{
-		push(s, pop(&tmp));
-	}
-}
-
 int isPalindrome(Stack* s)
 {
 	int size = size_of_stack(s);
-	if (size = 0) 
+	if (size == 0) 
 	{
 		return 1;
 	}
