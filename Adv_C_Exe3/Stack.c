@@ -8,6 +8,7 @@
 /***************** My Functions *****************/
 charNode* add_to_head(charNode* head, charNode* newnode);
 void remove_item(charNode** head);
+
 int size_of_stack(charNode* head);
 
 /***************** Stack ADT Implementation *****************/
@@ -35,14 +36,6 @@ void push(Stack* s, char data)
 											 //move the old head to be next in the stack
 }
 
-charNode *add_to_head(charNode* head, charNode* newnode)
-{
-	newnode->next = head;
-	head = newnode;
-	return head;
-}
-
-
 char pop(Stack* s)
 {
 	if (s->head == NULL)
@@ -55,22 +48,30 @@ char pop(Stack* s)
 	return res;
 }
 
-void remove_item(charNode **head)
-{
-	if (*head == NULL) //if stack is empty -> return
-		return;
-	charNode* tmp = *head;
-	*head = (*head)->next; // Transfer the second letter to the top of the stack
-	free(tmp); //Deleting the old stack head
-}
-
-
 int isEmptyStack(const Stack* s) // A function that checks if the stack is empty
 {
 	if (s->head == NULL)
 		return 1;
 	else
 		return 0;
+}
+
+
+
+charNode* add_to_head(charNode* head, charNode* newnode) // my function
+{
+	newnode->next = head;
+	head = newnode;
+	return head;
+}
+
+void remove_item(charNode** head) // my function
+{
+	if (*head == NULL) //if stack is empty -> return
+		return;
+	charNode* tmp = *head;
+	*head = (*head)->next; // Transfer the second letter to the top of the stack
+	free(tmp); //Deleting the old stack head
 }
 
 /*************** Functions using stacks - Implementation/definition **************************/
@@ -137,27 +138,6 @@ int isPalindrome(Stack* s) // A function that checks whether the stack is a pali
 	return 1; // If the loop is over it means the stack is a palindrome
 }
 	
-
-int size_of_stack(Stack* s)//Transfer the stack to the auxiliary stack +
-						   //count the letters and empty the auxiliary stack
-{
-	Stack tmp;
-	initStack(&tmp);
-	int counter = 0;
-	while ( !isEmptyStack(s))
-	{
-		char val = pop(s);
-		push(&tmp, val);
-		counter++;
-	}
-	while (!isEmptyStack(&tmp))
-	{
-		push(s, pop(&tmp));
-	}
-	return counter;
-}
-
-
 void rotateStack(Stack* s, int n)
 {
 	int size = size_of_stack(s);
@@ -195,3 +175,25 @@ void rotateStack(Stack* s, int n)
 	destroyStack(&help_stack_1);
 	destroyStack(&help_stack_2);
 }
+
+
+
+int size_of_stack(Stack* s) // my function   //Transfer the stack to the auxiliary stack +
+						                     //count the letters and empty the auxiliary stack
+{
+	Stack tmp;
+	initStack(&tmp);
+	int counter = 0;
+	while (!isEmptyStack(s))
+	{
+		char val = pop(s);
+		push(&tmp, val);
+		counter++;
+	}
+	while (!isEmptyStack(&tmp))
+	{
+		push(s, pop(&tmp));
+	}
+	return counter;
+}
+
