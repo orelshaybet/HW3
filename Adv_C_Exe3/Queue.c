@@ -26,6 +26,7 @@ void destroyQueue(Queue* q) // free manager structure
 void enqueue(Queue* q, unsigned int data)//add element to queue
 {
 	intNode* p = (intNode*)malloc(sizeof(intNode));//Allocating memory to an auxiliary queue
+	if(p == NULL)
 	{
 		printf("memory allocation problem \n");
 		return;
