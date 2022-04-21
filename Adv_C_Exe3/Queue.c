@@ -11,54 +11,53 @@ int sum_of_queue(Queue* q);
 
 /***************** Queue ADT Implementation *****************/
 
-void initQueue(Queue* q)
+void initQueue(Queue* q)// Boot Manager Structure
 {
 	q->head = NULL;
 	q->tail = NULL;
 }
 
-void destroyQueue(Queue* q)
+void destroyQueue(Queue* q) // free manager structure
 {
 	free(q->head);
 	free(q->tail);
 }
 
-void enqueue(Queue* q, unsigned int data)
+void enqueue(Queue* q, unsigned int data)//add element to queue
 {
-	intNode* p = (intNode*)malloc(sizeof(intNode));
-	if (p == NULL)
+	intNode* p = (intNode*)malloc(sizeof(intNode));//Allocating memory to an auxiliary queue
 	{
 		printf("memory allocation problem \n");
 		return;
 	}
-	p->data = data;
+	p->data = data;//// set element data
 	p->next = NULL;
-	if (isEmptyQueue(q) != 1)
+	if (isEmptyQueue(q) != 1)// not Empty?
 	{
-		q->tail->next = p;
+		q->tail->next = p;//Add after last
 	}
 	else
 	{
-		q->head = p;
+		q->head = p;//Otherwise – it becomes first
 	}
-	q->tail = p;
+	q->tail = p; //// update queue tail
 }
 
-unsigned int dequeue(Queue* q)
+unsigned int dequeue(Queue* q)// this function return data and delete the head
 {
 	unsigned int temp = q->head->data;
 	intNode* p = q->head;
 	q->head = q->head->next;
-	if (q->head == NULL)
+	if (q->head == NULL)//if queue gets empty
 	{
-		q->tail = NULL;					
+		q->tail = NULL;	//NULL;//both front and rear NULL				
 	}
 	free(p);
 	return temp;
 
 }
 
-int isEmptyQueue(const Queue* q)
+int isEmptyQueue(const Queue* q) //A function that checks if the queue is empty
 {
 	if (q->head == NULL && q->tail == NULL)
 		return 1;
@@ -70,10 +69,10 @@ int isEmptyQueue(const Queue* q)
 
 void rotateQueue(Queue* q)
 {
-	int size = size_of_queue(q);
+	int size = size_of_queue(q);//The explanation in the function
 	for (int i = 0; i < (size - 1); i++) 
 	{
-		enqueue(q, dequeue(q));				 
+		enqueue(q, dequeue(q));	//Move the first to the last place until the last becomes first			 
 	}
 }
 
@@ -81,38 +80,40 @@ void cutAndReplace(Queue* q)
 {
 	Queue helper1;
 	Queue helper2;
+	initQueue(&helper1);//Auxiliary queue boot
+	initQueue(&helper2);//Auxiliary queue boot
 
-	int size = size_of_queue(q);
-	int sum = sum_of_queue(q);
-	if (size % 2 == 1)
+	int size = size_of_queue(q);//The explanation in the function
+	int sum = sum_of_queue(q);//The explanation in the function
+	if (size % 2 == 1) // if not even
 	{
-		enqueue(q, (sum / size));
+		enqueue(q, (sum / size));//Insert the average at the end of the queue 
+		size++;					//and add 1 to the size
 	}
 	for (int i = 0; i < (size/2); i++)
 	{
-		enqueue(&helper2, dequeue(q));
+		enqueue(&helper2, dequeue(q));//Transfer half of the queue to an auxiliary queue
+	}
+	for (int i = 0; i < ((size / 2)-1); i++)
+	{
+		rotateQueue(q); 
+		enqueue(&helper1, dequeue(q));// Transferring the last queue to an auxiliary queue
+	}
+	enqueue(&helper1, dequeue(q));//Transferring the last remaining in line to an auxiliary queue
+	for (int i = 0; i < (size / 2); i++)
+	{
+		enqueue(q, dequeue(&helper1));//Return from auxiliary queue after inversion to the original queue
 	}
 	for (int i = 0; i < (size / 2); i++)
 	{
-		rotateQueue(&q);
-		enqueue(&helper1, dequeue(q));
+		enqueue(q, dequeue(&helper2));//Returning the first half to the end of the original queue
 	}
-	for (int i = 0; i < (size / 2); i++)
-	{
-		enqueue(q, dequeue(&helper1));
-	}
-	for (int i = 0; i < (size / 2); i++)
-	{
-		enqueue(q, dequeue(&helper2));
-	}
-	destroyQueue(&helper1);
-	destroyQueue(&helper2);
 }
 
 void sortKidsFirst(Queue* q)
 {
 	int size = size_of_queue(q);
-	int* arr = (int*)malloc(size * sizeof(int));
+	int* arr = (int*)malloc(size * sizeof(int));//Boot a dynamic array
 	if (arr == NULL)
 	{
 		printf("memory allocation problem \n");
@@ -120,9 +121,9 @@ void sortKidsFirst(Queue* q)
 	}
 	for (int i = 0; i < size; i++)
 	{
-		arr[i] = dequeue(q);
+		arr[i] = dequeue(q);//Copy the queue to the array + Removing a number from the queue
 	}
-	for (int i = 0; i < size -1; ++i) // arr[i] will be the smallest of i..N-1 
+	for (int i = 0; i < size -1; ++i) // Sort the array from the smallest to the largest 
 	{
 		for (int j = i + 1; j < size; ++j)
 		{
@@ -136,12 +137,12 @@ void sortKidsFirst(Queue* q)
 	}
 	for (int i = 0; i < size; i++)
 	{
-		enqueue(q, arr[i]);
+		enqueue(q, arr[i]); //Entering the sorted array numbers into the original queue
 	}
-	free(arr);
+	free(arr);// Release of the array
 }
 
-int size_of_queue(Queue* q)
+int size_of_queue(Queue* q)//An auxiliary function that checks the size of the queue
 {
 	Queue tmp;
 	initQueue(&tmp);
@@ -160,7 +161,7 @@ int size_of_queue(Queue* q)
 	return counter;
 }
 
-int sum_of_queue(Queue* q)
+int sum_of_queue(Queue* q)//Auxiliary function that checks the sum of the queue
 {
 	Queue tmp;
 	initQueue(&tmp);
